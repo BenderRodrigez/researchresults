@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.Text;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using ResearchResults.Models;
 
 namespace ResearchResults
 {
@@ -32,6 +33,47 @@ namespace ResearchResults
             doc["IsSOM"] = isSOM;
 
             collection.InsertOneAsync(doc);
+        }
+
+        public long GetDataCount()
+        {
+            var con = ConfigurationManager.ConnectionStrings["MONGOLAB_URI"].ConnectionString;
+            if (string.IsNullOrWhiteSpace(con))
+            {
+                con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
+            }
+            var client = new MongoClient(con);
+            var db = client.GetDatabase("DistortionMeasures");
+            var collection = db.GetCollection<BsonDocument>("Test");
+            return collection.CountAsync(new BsonDocument()).Result;
+        }
+
+        public List<DataModel> GetData(int from, int limit)
+        {
+            var con = ConfigurationManager.ConnectionStrings["MONGOLAB_URI"].ConnectionString;
+            if (string.IsNullOrWhiteSpace(con))
+            {
+                con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
+            }
+            var client = new MongoClient(con);
+            var db = client.GetDatabase("DistortionMeasures");
+            var collection = db.GetCollection<BsonDocument>("Test");
+            var filter = new BsonDocument();
+            var result =
+                collection.Find(filter)
+                    .Skip(from)
+                    .Limit(limit)
+                    .ToListAsync()
+                    .Result.Select(
+                        x =>
+                            new DataModel
+                            {
+                                Energy = x["Energy"].ToDouble(),
+                                IsSOM = x["IsSOM"].ToBoolean(),
+                                TestDictorName = x["TestDictorName"].ToString(),
+                                TrainDictorName = x["TrainDictorName"].ToString()
+                            });
+            return result.ToList();
         }
     }
 }

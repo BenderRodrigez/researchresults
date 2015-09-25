@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
+using ResearchResults.Models;
 
 namespace ResearchResults
 {
@@ -13,5 +14,11 @@ namespace ResearchResults
     {
         [OperationContract]
         void SaveData(double energyMeasure, string trainDictorName, string testDictorName, bool isSOM);
+
+        [OperationContract]
+        long GetDataCount();
+
+        [OperationContract]
+        List<DataModel> GetData(int from, int limit);
     }
 }
