@@ -13,7 +13,7 @@ namespace ResearchResults
     public interface IDataExchangePoint
     {
         [OperationContract]
-        void SaveData(double energyMeasure, string trainDictorName, string testDictorName, bool isSOM);
+        string SaveData(double energyMeasure, string trainDictorName, string testDictorName, bool isSOM);
 
         [OperationContract]
         long GetDataCount();

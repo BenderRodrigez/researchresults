@@ -15,24 +15,32 @@ namespace ResearchResults
     // ПРИМЕЧАНИЕ. Чтобы запустить клиент проверки WCF для тестирования службы, выберите элементы DataExchangePoint.svc или DataExchangePoint.svc.cs в обозревателе решений и начните отладку.
     public class DataExchangePoint : IDataExchangePoint
     {
-        public void SaveData(double energyMeasure, string trainDictorName, string testDictorName, bool isSOM)
+        public string SaveData(double energyMeasure, string trainDictorName, string testDictorName, bool isSOM)
         {
-            var con = ConfigurationManager.ConnectionStrings["MONGOLAB_URI"].ConnectionString;
-            if (string.IsNullOrWhiteSpace(con))
+            try
             {
-                con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
+                var con = ConfigurationManager.ConnectionStrings["MONGOLAB_URI"].ConnectionString;
+                if (string.IsNullOrWhiteSpace(con))
+                {
+                    con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
+                }
+                var client = new MongoClient(con);
+                var db = client.GetDatabase("DistortionMeasures");
+                var collection = db.GetCollection<BsonDocument>("Test");
+
+                var doc = new BsonDocument();
+                doc["Energy"] = energyMeasure;
+                doc["TrainDictor"] = trainDictorName;
+                doc["TestDictor"] = testDictorName;
+                doc["IsSOM"] = isSOM;
+
+                collection.InsertOneAsync(doc);
+                return "OK";
             }
-            var client = new MongoClient(con);
-            var db = client.GetDatabase("DistortionMeasures");
-            var collection = db.GetCollection<BsonDocument>("Test");
-
-            var doc = new BsonDocument();
-            doc["Energy"] = energyMeasure;
-            doc["TrainDictor"] = trainDictorName;
-            doc["TestDictor"] = testDictorName;
-            doc["IsSOM"] = isSOM;
-
-            collection.InsertOneAsync(doc);
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
         }
 
         public long GetDataCount()
