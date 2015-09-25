@@ -47,7 +47,9 @@ namespace ResearchResults
                 var client = new MongoClient(con);
                 var db = client.GetDatabase("DistortionMeasures");
                 var collection = db.GetCollection<BsonDocument>("Test");
-                return collection.CountAsync(new BsonDocument()).Result.ToString();
+                var dbResp= collection.CountAsync(new BsonDocument());
+                dbResp.Wait();
+                return dbResp.Result.ToString();
             }
             catch (Exception e)
             {
