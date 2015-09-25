@@ -19,11 +19,7 @@ namespace ResearchResults
         {
             try
             {
-                var con = ConfigurationManager.ConnectionStrings["MONGOLAB_URI"].ConnectionString;
-                if (string.IsNullOrWhiteSpace(con))
-                {
-                    con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
-                }
+                var con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
                 var client = new MongoClient(con);
                 var db = client.GetDatabase("DistortionMeasures");
                 var collection = db.GetCollection<BsonDocument>("Test");
