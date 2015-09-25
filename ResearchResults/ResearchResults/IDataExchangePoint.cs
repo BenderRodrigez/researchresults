@@ -16,7 +16,7 @@ namespace ResearchResults
         string SaveData(double energyMeasure, string trainDictorName, string testDictorName, bool isSOM);
 
         [OperationContract]
-        long GetDataCount();
+        string GetDataCount();
 
         [OperationContract]
         List<DataModel> GetData(int from, int limit);

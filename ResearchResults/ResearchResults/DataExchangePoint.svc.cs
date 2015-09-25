@@ -39,13 +39,20 @@ namespace ResearchResults
             }
         }
 
-        public long GetDataCount()
+        public string GetDataCount()
         {
-            var con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
-            var client = new MongoClient(con);
-            var db = client.GetDatabase("DistortionMeasures");
-            var collection = db.GetCollection<BsonDocument>("Test");
-            return collection.CountAsync(new BsonDocument()).Result;
+            try
+            {
+                var con = ConfigurationManager.AppSettings["MONGOLAB_URI"];
+                var client = new MongoClient(con);
+                var db = client.GetDatabase("DistortionMeasures");
+                var collection = db.GetCollection<BsonDocument>("Test");
+                return collection.CountAsync(new BsonDocument()).Result.ToString();
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
         }
 
         public List<DataModel> GetData(int from, int limit)
